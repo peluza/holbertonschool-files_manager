@@ -12,6 +12,9 @@ class AuthController {
     }
     const buf = Buffer.from(Authorization.replace('Basic', ''), 'base64');
     const cred = { email: buf.toString('utf-8').split(':')[0], password: buf.toString('utf-8').split(':')[1] };
+    if (!cred.email || !cred.password) {
+      return response.status(401).send({ error: 'Unauthorized' });
+    }
     cred.password = sha1(cred.password);
     const userExists = await dbClient.DB.collection('users').findOne(cred);
     if (!userExists) {
