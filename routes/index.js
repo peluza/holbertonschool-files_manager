@@ -2,6 +2,7 @@ import { Router, json } from 'express';
 import AppController from '../controllers/AppController';
 import UsersController from '../controllers/UsersController';
 import AuthController from '../controllers/AuthController';
+import FilesController from '../controllers/FilesController';
 
 const router = (app) => {
   const path = Router();
@@ -13,6 +14,7 @@ const router = (app) => {
   path.get('/connect', (request, response) => AuthController.getConnect(request, response));
   path.get('/disconnect', (request, response) => AuthController.getDisconnect(request, response));
   path.get('/users/me', (request, response) => UsersController.getMe(request, response));
+  path.post('/files', (request, response) => FilesController.postUpload(request, response));
 };
 
 export default router;

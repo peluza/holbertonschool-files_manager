@@ -6,7 +6,6 @@ import redisClient from '../utils/redis';
 class AuthController {
   static async getConnect(request, response) {
     const Authorization = request.header('Authorization');
-    console.log(Authorization);
     if (!Authorization) {
       return response.status(401).send({ error: 'Unauthorized' });
     }
@@ -32,11 +31,9 @@ class AuthController {
       return response.status(401).send({ error: 'Unauthorized' });
     }
     const tokenRedis = await redisClient.get(`auth_${xToken}`);
-    console.log(tokenRedis);
     if (!tokenRedis) {
       return response.status(401).send({ error: 'Unauthorized' });
     }
-    await redisClient.del(`auth_${xToken}`);
     return response.status(204).send();
   }
 }
