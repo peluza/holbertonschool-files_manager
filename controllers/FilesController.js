@@ -24,7 +24,7 @@ class FilesController {
     if (!name) {
       return response.status(400).send({ error: 'Missing name' });
     }
-    if (!type || ['folder', 'file', 'image'].includes(type)) {
+    if (!type || !['folder', 'file', 'image'].includes(type)) {
       return response.status(400).send({ error: 'Missing type' });
     }
     if (!data && type !== 'folder') {
@@ -53,13 +53,13 @@ class FilesController {
     const nameFile = uuidv4();
     const fullFile = `${path}/${nameFile}`;
     const buf = Buffer.from(data, 'base64');
-    await fs.mkdir(path, (err) => {
+    fs.mkdir(path, (err) => {
       if (err) {
         return response.status(400).send({ error: `${err.message}` });
       }
       return true;
     });
-    await fs.writeFile(fullFile, buf, (err) => {
+    fs.writeFile(fullFile, buf, (err) => {
       if (err) {
         return response.status(400).send({ error: `${err.message}` });
       }
@@ -68,9 +68,7 @@ class FilesController {
     const infoFI = {
       name: `${name}`, type: `${type}`, parentId: `${parentId}`, isPublic: `${isPublic}`, userId: `${result._id}`, localPath: `${fullFile}`,
     };
-    if (['file', 'image'].includes(type)) {
-      await dbClient.DB.collection('files').insertOne(infoFI);
-    }
+    await dbClient.DB.collection('files').insertOne(infoFI);
     return response.status(201).send(infoFI);
   }
 }
