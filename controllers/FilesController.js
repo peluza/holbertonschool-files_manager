@@ -27,13 +27,14 @@ class FilesController {
     if (!type || !['folder', 'file', 'image'].includes(type)) {
       return response.status(400).send({ error: 'Missing type' });
     }
-    if (!data && type !== 'folder') {
+    if (!data && ['file', 'image'].includes(type)) {
       return response.status(400).send({ error: 'Missing data' });
     }
     const isFilePublic = isPublic || false;
-    const parId = parentId || 0;
-    const value = parseInt('0', 10);
-    if (parId !== value) {
+    let parId = parentId || 0;
+    parId = parId === '0' ? 0 : parId;
+    console.log(parId);
+    if (parId !== 0) {
       const resultFiles = await dbClient.DB.collection('files').findOne({ _id: ObjectId(parId) });
       if (!resultFiles) {
         return response.status(400).send({ error: 'Parent not found' });
@@ -68,7 +69,9 @@ class FilesController {
     const infoFI = {
       name: `${name}`, type: `${type}`, parentId: `${parentId}`, isPublic: `${isPublic}`, userId: `${result._id}`, localPath: `${fullFile}`,
     };
-    await dbClient.DB.collection('files').insertOne(infoFI);
+    console.log(infoFI);
+    const saveFile = await dbClient.DB.collection('files').insertOne(infoFI);
+    console.log(saveFile);
     return response.status(201).send(infoFI);
   }
 }
