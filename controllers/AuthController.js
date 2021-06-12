@@ -19,10 +19,10 @@ class AuthController {
     if (!userExists) {
       return response.status(401).send({ error: 'Unauthorized' });
     }
-    const tokenUser = uuidv4();
-    const keyTok = `auth_${tokenUser}`;
+    const token = uuidv4();
+    const keyTok = `auth_${token}`;
     redisClient.set(keyTok, userExists._id.toString(), 86400);
-    return response.status(200).send({ tokenUser });
+    return response.status(200).send({ token });
   }
 
   static async getDisconnect(request, response) {
@@ -34,6 +34,7 @@ class AuthController {
     if (!tokenRedis) {
       return response.status(401).send({ error: 'Unauthorized' });
     }
+    await redisClient.del(`auth_${xToken}`);
     return response.status(204).send();
   }
 }
